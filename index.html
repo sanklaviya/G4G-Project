@@ -1196,7 +1196,192 @@
         });
 
         // ============================================================================
-        // 15. Initialize: show welcome state
+        // 15. Chat: Send messages to Gemini API
+        // ============================================================================
+
+        const GEMINI_MODEL = 'gemini-2.5-flash';
+        const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+        // --- Append a message bubble to the chat window ---
+        function appendChatMessage(role, text) {
+            const container = document.getElementById('chatMessages');
+            const isUser = role === 'user';
+            const iconName = isUser ? 'user' : 'bot';
+            const iconBg = isUser ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800';
+            const bubbleBg = isUser ? 'bg-red-700 text-white' : 'bg-white border border-gray-200';
+            const align = isUser ? '' : '';
+
+            const div = document.createElement('div');
+            div.className = 'flex items-start space-x-3';
+            div.innerHTML = `
+                <div class="${iconBg} p-1.5 rounded mt-0.5 shrink-0">
+                    <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                </div>
+                <div class="${bubbleBg} rounded-lg p-3 shadow-sm max-w-[85%]">
+                    <p class="text-xs ${isUser ? 'text-white' : 'text-gray-700'}">${escapeHtml(text)}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            lucide.createIcons();
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // --- Show / hide typing indicator ---
+        let typingIndicator = null;
+
+        function showTypingIndicator() {
+            hideTypingIndicator();
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.id = 'typingIndicator';
+            div.className = 'flex items-start space-x-3';
+            div.innerHTML = `
+                <div class="bg-red-100 text-red-800 p-1.5 rounded mt-0.5 shrink-0">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm max-w-[85%]">
+                    <p class="text-xs text-gray-500 italic">Thinking...</p>
+                </div>
+            `;
+            container.appendChild(div);
+            lucide.createIcons();
+            container.scrollTop = container.scrollHeight;
+            typingIndicator = div;
+        }
+
+        function hideTypingIndicator() {
+            if (typingIndicator) {
+                typingIndicator.remove();
+                typingIndicator = null;
+            }
+        }
+
+        // --- Build context string from the active document ---
+        function buildChatContext() {
+            const scope = document.getElementById('chatScope').value;
+            let context = '';
+
+            if (scope === 'active') {
+                const doc = library.find(d => d.id === activeDocId);
+                if (doc) {
+                    context = `Current Paper: "${doc.title}" by ${doc.authors}\n\nAbstract: ${doc.abstract || 'N/A'}\n\nFull Text:\n${doc.body.slice(0, 8000)}`;
+                } else {
+                    context = 'No active document selected.';
+                }
+            } else {
+                // Entire library
+                if (library.length === 0) {
+                    context = 'No documents in the library.';
+                } else {
+                    context = library.map((d, i) => {
+                        return `--- Paper ${i + 1}: "${d.title}" by ${d.authors} ---\nAbstract: ${d.abstract || 'N/A'}\n\n${d.body.slice(0, 4000)}`;
+                    }).join('\n\n').slice(0, 20000);
+                }
+            }
+
+            return context;
+        }
+
+        // --- Call Gemini API ---
+        async function callGeminiApi(messages) {
+            if (!apiKey) {
+                throw new Error('No API key set. Click "Connect Gemini API" to add your key.');
+            }
+
+            const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: messages,
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 2048,
+                        topP: 0.95
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errBody = await response.text().catch(() => '');
+                let msg = `API error (${response.status})`;
+                if (response.status === 400) msg = 'Bad request — check your API key is valid and has access to this model.';
+                if (response.status === 403) msg = 'API key rejected — check it has Gemini API enabled in Google Cloud.';
+                if (response.status === 429) msg = 'Rate limited — wait a moment and try again.';
+                throw new Error(msg + (errBody ? ': ' + errBody.slice(0, 200) : ''));
+            }
+
+            const data = await response.json();
+            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) {
+                const finishReason = data?.candidates?.[0]?.finishReason || 'unknown';
+                throw new Error(`Model returned no text (finish reason: ${finishReason})`);
+            }
+
+            return text;
+        }
+
+        // --- Handle chat form submission ---
+        document.getElementById('chatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Show user message
+            appendChatMessage('user', message);
+            input.value = '';
+            input.disabled = true;
+
+            showTypingIndicator();
+
+            try {
+                // Build context and construct the conversation
+                const context = buildChatContext();
+
+                const systemInstruction = `You are arXiv NotebookLM Assistant, an academic research helper. ` +
+                    `You answer questions about the user's loaded research papers. ` +
+                    `Be precise, cite specific passages, and use academic language. ` +
+                    `If the answer isn't in the provided papers, say so clearly. ` +
+                    `Use LaTeX inline ($...$) for equations and markdown for structure.`;
+
+                const geminiMessages = [
+                    {
+                        role: 'user',
+                        parts: [{ text: `[SYSTEM INSTRUCTION]\n${systemInstruction}\n\n[DOCUMENT CONTEXT]\n${context}\n\n---\nNow answer the following question based on the papers above.` }]
+                    },
+                    {
+                        role: 'model',
+                        parts: [{ text: 'Understood. I have read the papers and am ready to answer.' }]
+                    },
+                    {
+                        role: 'user',
+                        parts: [{ text: message }]
+                    }
+                ];
+
+                const reply = await callGeminiApi(geminiMessages);
+                hideTypingIndicator();
+                appendChatMessage('model', reply);
+
+                // Re-render MathJax in case the reply contains LaTeX
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(() => {});
+                }
+
+            } catch (err) {
+                hideTypingIndicator();
+                appendChatMessage('model', '⚠️ Error: ' + err.message);
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
+        });
+
+        // ============================================================================
+        // 16. Initialize: show welcome state
         // ============================================================================
         renderDocumentList();
         updatePdfBadge();
