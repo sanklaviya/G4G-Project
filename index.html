@@ -298,40 +298,46 @@
                 <div class="absolute inset-0 overflow-y-auto p-8" id="paperContainer">
                     <div class="max-w-3xl mx-auto arxiv-card p-8 bg-white" style="box-shadow: 0 0 10px rgba(0,0,0,0.02)">
                         
-                        <!-- Paper Title -->
-                        <h1 class="text-2xl font-bold text-gray-900 leading-tight tracking-tight mb-4 font-serif" id="paperTitle">
-                            Welcome to arXiv-NotebookLM Assistant
-                        </h1>
+                        <!-- Consolidated Header Container -->
+                        <div class="space-y-4">
+                            <!-- Paper Title -->
+                            <h1 class="text-2xl font-bold text-gray-900 leading-tight tracking-tight font-serif" id="paperTitle">
+                                Welcome to arXiv-NotebookLM Assistant
+                            </h1>
 
-                        <!-- Authors block -->
-                        <div class="text-sm text-blue-900 mb-6 font-medium" id="paperAuthors">
-                            Gemini & arXiv Integration Platform
-                        </div>
+                            <!-- Authors block -->
+                            <div class="text-sm text-blue-900 font-medium" id="paperAuthors">
+                                Gemini & arXiv Integration Platform
+                            </div>
 
-                        <!-- Horizontal Metadata Divider -->
-                        <div class="border-t border-b border-gray-200 py-3 my-4 text-xs font-mono text-gray-600 grid grid-cols-2 gap-2" id="paperMeta">
-                            <div><strong>Subjects:</strong> Computation and Language (cs.CL); Machine Learning (cs.LG)</div>
-                            <div><strong>Submitted on:</strong> 27 Jun 2026 (this version)</div>
-                        </div>
-
-                        <!-- Abstract Block -->
-                        <div class="bg-gray-50 border-l-4 border-red-700 p-4 mb-6">
-                            <h2 class="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 font-mono">Abstract</h2>
-                            <div class="text-sm text-gray-700 leading-relaxed italic text-justify" id="paperAbstract">
-                                Select a research paper from the sidebar library or upload your own files to get started. You can use full-text keyword search across your paper library, analyze content, and chat with your files using Google's generative models directly.
+                            <!-- Horizontal Metadata Divider -->
+                            <div class="border-t border-b border-gray-200 py-3 text-xs font-mono text-gray-600 grid grid-cols-2 gap-2" id="paperMeta">
+                                <div><strong>Subjects:</strong> Computation and Language (cs.CL); Machine Learning (cs.LG)</div>
+                                <div><strong>Submitted on:</strong> 27 Jun 2026 (this version)</div>
                             </div>
                         </div>
 
-                        <!-- Main Full-Text Render -->
-                        <div class="prose max-w-none text-sm text-gray-800 leading-relaxed text-justify space-y-4 font-serif" id="paperBody">
-                            <p>To begin interacting with research papers:</p>
-                            <ol class="list-decimal pl-5 space-y-2">
-                                <li>Check out the pre-loaded foundational academic papers in the left sidebar.</li>
-                                <li>Upload your own PDF or paste raw text to build a dynamic personal research library.</li>
-                                <li>Use the global search tool above to instantly locate matches and highlights inside all text contents.</li>
-                                <li>Expand the smart AI Research Assistant in the bottom right corner of the window to initiate discussions, query equations, compile comparative syntheses, or draft summaries using <strong>Gemini 2.5 Flash</strong>.</li>
-                            </ol>
-                            <p class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 italic">This tool runs 100% in-browser. Your papers and API keys are stored only locally in your session and are sent safely and directly to the secure Google Vertex/AI Studio APIs.</p>
+                        <!-- Consolidated Main Content Wrapping Container (Abstract + Introduction) -->
+                        <div class="mt-6 space-y-6">
+                            <!-- Abstract Block -->
+                            <div class="bg-gray-50 border-l-4 border-red-700 p-4 rounded-r">
+                                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 font-mono">Abstract</h2>
+                                <div class="text-sm text-gray-700 leading-relaxed italic text-justify" id="paperAbstract">
+                                    Select a research paper from the sidebar library or upload your own files to get started. You can use full-text keyword search across your paper library, analyze content, and chat with your files using Google's generative models directly.
+                                </div>
+                            </div>
+
+                            <!-- Main Full-Text Render Section -->
+                            <div class="prose max-w-none text-sm text-gray-800 leading-relaxed text-justify space-y-4 font-serif border-t border-gray-100 pt-6" id="paperBody">
+                                <p>To begin interacting with research papers:</p>
+                                <ol class="list-decimal pl-5 space-y-2">
+                                    <li>Check out the pre-loaded foundational academic papers in the left sidebar.</li>
+                                    <li>Upload your own PDF or paste raw text to build a dynamic personal research library.</li>
+                                    <li>Use the global search tool above to instantly locate matches and highlights inside all text contents.</li>
+                                    <li>Expand the smart AI Research Assistant in the bottom right corner of the window to initiate discussions, query equations, compile comparative syntheses, or draft summaries using <strong>Gemini 2.5 Flash</strong>.</li>
+                                </ol>
+                                <p class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 italic">This tool runs 100% in-browser. Your papers and API keys are stored only locally in your session and are sent safely and directly to the secure Google Vertex/AI Studio APIs.</p>
+                            </div>
                         </div>
 
                     </div>
@@ -376,7 +382,8 @@
                         <option value="active">Active Paper Context</option>
                         <option value="all" selected>Entire Library Context</option>
                     </select>
-                    <button id="newChatBtn" class="text-white hover:text-red-200 p-1 rounded hover:bg-[#174446] transition-colors flex items-center justify-center" title="Start New Chat">
+                    <!-- New Chat Option -->
+                    <button id="newChatBtn" class="text-white hover:text-red-200 p-1.5 rounded hover:bg-[#174446] transition-all flex items-center justify-center" title="Start New Chat">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
                     </button>
                     <button id="chatCollapseBtn" class="text-white hover:text-red-200 p-0.5">
@@ -526,960 +533,685 @@
         let library = [];
         let activeDocId = null;
         let searchQuery = "";
-        let activeReaderTab = "text"; // "text" or "pdf"
-        
-        // Dynamic in-memory storage of processed PDF documents (keeps state for render sessions)
+        let activeReaderTab = "text"; 
         const loadedPdfInstances = new Map();
-
-        // Setup PDF.js Worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        // Preload Iconic Classic ArXiv Papers so the workspace looks full on start
-        const mockPapers = [
-            {
-                id: "attention-is-all-you-need",
-                title: "Attention Is All You Need",
-                authors: "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, Illia Polosukhin",
-                category: "cs.CL",
-                arxivId: "arXiv:1706.03762 [cs.CL]",
-                abstract: "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.",
-                body: `## 1. Introduction
-                Recurrent neural networks, long short-term memory (LSTM) and gated recurrent neural networks in particular, have been firmly established as state-of-the-art approaches in sequence modeling and transduction problems such as language modeling and machine translation.
-                
-                The Transformer is the first transduction model relying entirely on self-attention to compute representations of its input and output without using sequence-aligned RNNs or convolution.
-                
-                ## 2. Model Architecture
-                Most competitive neural sequence transduction models have an encoder-decoder structure. Here, the encoder maps an input sequence of symbol representations $(x_1, ..., x_n)$ to a sequence of continuous representations $z = (z_1, ..., z_n)$. Given $z$, the decoder then generates an output sequence $(y_1, ..., y_m)$ of symbols one element at a time. At each step the model is auto-regressive, consuming the previously generated symbols as additional input when generating the next.
-                
-                ### 2.1 Encoder and Decoder Stacks
-                * **Encoder**: The encoder is composed of a stack of $N = 6$ identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network. We employ a residual connection around each of the two sub-layers, followed by layer normalization.
-                * **Decoder**: The decoder is also composed of a stack of $N = 6$ identical layers. In addition to the two sub-layers in each encoder layer, the decoder inserts a third sub-layer, which performs multi-head attention over the output of the encoder stack. We also modify the self-attention sub-layer in the decoder stack to prevent positions from attending to subsequent positions.
-                
-                ### 2.2 Attention
-                An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
-                
-                We call our particular attention "Scaled Dot-Product Attention". The input consists of queries and keys of dimension $d_k$, and values of dimension $v$.
-                
-                $$\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V$$
-                
-                Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.
-                
-                $$\\text{MultiHead}(Q, K, V) = \\text{Concat}(\\text{head}_1, ..., \\text{head}_h)W^O$$
-                where $\\text{head}_i = \\text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$`
-            },
-            {
-                id: "generative-adversarial-nets",
-                title: "Generative Adversarial Nets",
-                authors: "Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio",
-                category: "cs.LG",
-                arxivId: "arXiv:1406.2661 [cs.LG]",
-                abstract: "We propose a new framework for estimating generative models via an adversarial process, in which we simultaneously train two models: a generative model G that captures the data distribution, and a discriminative model D that estimates the probability that a sample came from the training data rather than G. The training procedure for G is to maximize the probability of D making a mistake.",
-                body: `## 1. Introduction
-                The promise of deep learning is to discover rich, hierarchical models that represent probability distributions over the kinds of data encountered in artificial intelligence applications, such as natural images, audio waveforms containing speech, and symbols in natural language corpora.
-                
-                In this proposed adversarial nets framework, the generative model is pitted against an adversary: a discriminative model that learns to determine whether a sample is from the model distribution or the data distribution.
-                
-                ## 2. Adversarial Nets
-                The adversarial modeling framework is most straightforward to apply when the models are both multilayer perceptrons. To learn the generator's distribution $p_g$ over data $x$, we define a prior on input noise variables $p_z(z)$, then represent a mapping to data space as $G(z; \\theta_g)$, where $G$ is a differentiable function represented by a multilayer perceptron with parameters $\\theta_g$. We also define a second multilayer perceptron $D(x; \\theta_d)$ that outputs a single scalar. $D(x)$ represents the probability that $x$ came from the data rather than $p_g$.
-                
-                We train $D$ to maximize the probability of assigning the correct label to both training examples and samples from $G$. We simultaneously train $G$ to minimize $\\log(1 - D(G(z)))$.
-                
-                In other words, $D$ and $G$ play the following two-player minimax game with value function $V(D, G)$:
-                
-                $$\\min_G \\max_D V(D,G) = \\mathbb{E}_{x \\sim p_{\\text{data}}(x)}[\\log D(x)] + \\mathbb{E}_{z \\sim p_z(z)}[\\log(1 - D(G(z)))]$$
-                
-                ## 3. Theoretical Results
-                The generator $G$ implicitly defines a probability distribution $p_g$ as the distribution of the samples $G(z)$ obtained when $z \\sim p_z$. Therefore, we would like Algorithm 1 to converge to a good estimator of $p_{\\text{data}}$, if given sufficient capacity and training time.`
+        // ============================================================================
+        // 2. File Upload: Click Drop Zone → Open File Picker
+        // ============================================================================
+        document.getElementById('dropZone').addEventListener('click', () => {
+            const count = library.filter(d => d.type === 'pdf').length;
+            if (count >= 2) {
+                alert('Maximum of 2 PDF files allowed. Remove one to upload another.');
+                return;
             }
-        ];
+            document.getElementById('fileInput').click();
+        });
 
-        // 2. DOM Elements
-        const element = {
-            librarySearch: document.getElementById('librarySearch'),
-            clearSearchBtn: document.getElementById('clearSearchBtn'),
-            apiKeyBtn: document.getElementById('apiKeyBtn'),
-            apiKeyBtnText: document.getElementById('apiKeyBtnText'),
-            dropZone: document.getElementById('dropZone'),
-            fileInput: document.getElementById('fileInput'),
-            manualPasteBtn: document.getElementById('manualPasteBtn'),
-            uploadStatus: document.getElementById('uploadStatus'),
-            docCount: document.getElementById('docCount'),
-            clearAllDocs: document.getElementById('clearAllDocs'),
-            documentList: document.getElementById('documentList'),
-            activeCategoryTag: document.getElementById('activeCategoryTag'),
-            activeArXivId: document.getElementById('activeArXivId'),
-            fullscreenBtn: document.getElementById('fullscreenBtn'),
-            paperContainer: document.getElementById('paperContainer'),
-            paperTitle: document.getElementById('paperTitle'),
-            paperAuthors: document.getElementById('paperAuthors'),
-            paperMeta: document.getElementById('paperMeta'),
-            paperAbstract: document.getElementById('paperAbstract'),
-            paperBody: document.getElementById('paperBody'),
-            pdfLimitBadge: document.getElementById('pdfLimitBadge'),
-            activeEngineText: document.getElementById('activeEngineText'),
-            chatEngineSubtitle: document.getElementById('chatEngineSubtitle'),
-            
-            // Tab Elements
-            tabTextBtn: document.getElementById('tabTextBtn'),
-            tabPdfBtn: document.getElementById('tabPdfBtn'),
-            pdfViewPane: document.getElementById('pdfViewPane'),
-            pdfPagesContainer: document.getElementById('pdfPagesContainer'),
-            
-            // Chat elements
-            chatToggleBtn: document.getElementById('chatToggleBtn'),
-            chatWidget: document.getElementById('chatWidget'),
-            chatCollapseBtn: document.getElementById('chatCollapseBtn'),
-            newChatBtn: document.getElementById('newChatBtn'),
-            chatMessages: document.getElementById('chatMessages'),
-            chatInput: document.getElementById('chatInput'),
-            chatForm: document.getElementById('chatForm'),
-            chatScope: document.getElementById('chatScope'),
-            chatSuggestions: document.getElementById('chatSuggestions'),
-            chatContextLabel: document.getElementById('chatContextLabel'),
+        // --- File selected via the file picker ---
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+            e.target.value = ''; // reset so same file can be re-selected
+        });
 
-            // Modals
-            apiKeyModal: document.getElementById('apiKeyModal'),
-            apiKeyInput: document.getElementById('apiKeyInput'),
-            saveApiKey: document.getElementById('saveApiKey'),
-            cancelApiKey: document.getElementById('cancelApiKey'),
-            closeApiModal: document.getElementById('closeApiModal'),
-
-            pasteModal: document.getElementById('pasteModal'),
-            closePasteModal: document.getElementById('closePasteModal'),
-            cancelPaste: document.getElementById('cancelPaste'),
-            submitPaste: document.getElementById('submitPaste'),
-            pasteTitle: document.getElementById('pasteTitle'),
-            pasteAuthors: document.getElementById('pasteAuthors'),
-            pasteCategory: document.getElementById('pasteCategory'),
-            pasteArXivId: document.getElementById('pasteArXivId'),
-            pasteAbstract: document.getElementById('pasteAbstract'),
-            pasteBody: document.getElementById('pasteBody')
-        };
-
-        // 3. Document Library Methods
-        function loadPresetLibrary() {
-            const saved = localStorage.getItem("arxiv_notebook_library");
-            if (saved) {
-                try {
-                    library = JSON.parse(saved);
-                } catch(e) {
-                    library = [...mockPapers];
-                }
-            } else {
-                library = [...mockPapers];
-            }
-            updateDocCountUI();
-            renderDocumentList();
-            if (library.length > 0) {
-                setActiveDocument(library[0].id);
-            }
-        }
-
-        function saveLibraryToStorage() {
-            const persistableLibrary = library.map(doc => {
-                const copy = { ...doc };
-                return copy;
+        // ============================================================================
+        // 3. Drag-and-Drop Handlers
+        // ============================================================================
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropZone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-red-700', 'bg-white');
+                dropZone.querySelector('p')?.classList.add('text-red-700');
             });
-            localStorage.setItem("arxiv_notebook_library", JSON.stringify(persistableLibrary));
-            updateDocCountUI();
-        }
-
-        // Return number of local PDF files loaded in the library
-        function getPdfCount() {
-            return library.filter(doc => doc.category === "Local.PDF").length;
-        }
-
-        function updateDocCountUI() {
-            element.docCount.textContent = library.length;
-            
-            const pdfCount = getPdfCount();
-            element.pdfLimitBadge.textContent = `PDFs: ${pdfCount}/2`;
-            if (pdfCount >= 2) {
-                element.pdfLimitBadge.className = "text-[10px] text-[#FF9E20] font-mono font-bold";
-            } else {
-                element.pdfLimitBadge.className = "text-[10px] text-gray-500 font-mono font-bold";
-            }
-
-            if (library.length > 0) {
-                element.clearAllDocs.classList.remove('hidden');
-            } else {
-                element.clearAllDocs.classList.add('hidden');
-            }
-        }
-
-        function renderDocumentList() {
-            element.documentList.innerHTML = '';
-            
-            // Filter list based on search if active
-            const filtered = library.filter(doc => {
-                if (!searchQuery) return true;
-                const q = searchQuery.toLowerCase();
-                return doc.title.toLowerCase().includes(q) || 
-                       doc.authors.toLowerCase().includes(q) || 
-                       doc.abstract.toLowerCase().includes(q) ||
-                       doc.body.toLowerCase().includes(q);
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-red-700', 'bg-white');
+                dropZone.querySelector('p')?.classList.remove('text-red-700');
             });
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
 
-            if (filtered.length === 0) {
-                element.documentList.innerHTML = `
-                    <div class="text-xs text-gray-400 text-center py-4 font-mono">
-                        No matching papers found.
-                    </div>
-                `;
+        // ============================================================================
+        // 4. File Processing Pipeline
+        // ============================================================================
+        async function handleFiles(files) {
+            const pdfFiles = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+            const txtFiles = files.filter(f => f.name.toLowerCase().endsWith('.txt'));
+            const otherFiles = files.filter(f => !f.name.toLowerCase().endsWith('.pdf') && !f.name.toLowerCase().endsWith('.txt'));
+
+            if (otherFiles.length > 0) {
+                alert('Only PDF (.pdf) and Text (.txt) files are supported. Ignored ' + otherFiles.length + ' unsupported file(s).');
+            }
+
+            const currentPdfCount = library.filter(d => d.type === 'pdf').length;
+            if (currentPdfCount + pdfFiles.length > 2) {
+                alert(`Maximum of 2 PDF files allowed. You have ${currentPdfCount} active and are adding ${pdfFiles.length}.`);
                 return;
             }
 
-            filtered.forEach(doc => {
-                const isActive = doc.id === activeDocId;
-                const activeClass = isActive 
-                    ? 'border-l-4 border-[#215E61] bg-[#215e610d] font-semibold' 
-                    : 'hover:bg-gray-50';
+            if (pdfFiles.length === 0 && txtFiles.length === 0) return;
 
-                const isPdf = doc.category === "Local.PDF";
+            const statusEl = document.getElementById('uploadStatus');
+            statusEl.classList.remove('hidden');
+            statusEl.textContent = `Processing ${pdfFiles.length + txtFiles.length} file(s)...`;
 
-                const docItem = document.createElement('div');
-                docItem.className = `p-3 rounded border border-gray-200 cursor-pointer transition-all ${activeClass}`;
-                docItem.onclick = () => setActiveDocument(doc.id);
-                docItem.innerHTML = `
-                    <div class="flex items-start justify-between space-x-2">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-1.5 mb-1">
-                                <span class="text-[10px] uppercase font-bold tracking-wider text-[#215E61] font-mono">${doc.category || 'cs.AI'}</span>
-                                ${isPdf ? `<span class="bg-[#215E61] text-white text-[8px] font-bold px-1 py-0.2 rounded font-mono uppercase">PDF</span>` : ''}
-                            </div>
-                            <h4 class="text-xs font-serif text-gray-900 leading-snug line-clamp-2">${highlightSearch(doc.title)}</h4>
-                            <p class="text-[10px] text-gray-500 font-sans mt-1 line-clamp-1">${doc.authors}</p>
-                        </div>
-                        <button onclick="event.stopPropagation(); deleteDocument('${doc.id}')" class="text-gray-400 hover:text-red-700 p-0.5">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                `;
-                element.documentList.appendChild(docItem);
-            });
-            lucide.createIcons();
-        }
+            for (const file of pdfFiles) {
+                await processPdfFile(file);
+            }
+            for (const file of txtFiles) {
+                await processTextFile(file);
+            }
 
-        async function setActiveDocument(id) {
-            activeDocId = id;
-            const doc = library.find(d => d.id === id);
-            if (!doc) return;
-
-            // Re-render list to show active highlight
+            statusEl.classList.add('hidden');
             renderDocumentList();
-
-            // Populate viewer metadata
-            element.activeCategoryTag.textContent = doc.category || "cs.AI";
-            element.activeArXivId.textContent = doc.arxivId || `arXiv:${Math.floor(Math.random() * 90 + 10)}.${Math.floor(Math.random() * 9000 + 1000)}`;
-            element.paperTitle.innerHTML = highlightSearch(doc.title);
-            element.paperAuthors.textContent = doc.authors;
-            
-            element.paperMeta.innerHTML = `
-                <div><strong>Subjects:</strong> ${doc.category || 'Computer Science'}</div>
-                <div><strong>Identifier:</strong> ${doc.arxivId || 'N/A'}</div>
-            `;
-            
-            element.paperAbstract.innerHTML = highlightSearch(doc.abstract);
-            
-            // Format full body text
-            let rawBody = doc.body;
-            let formattedBody = marked.parse(rawBody);
-            element.paperBody.innerHTML = highlightSearch(formattedBody);
-
-            // Handle PDF Document Viewer State via Canvas Pages
-            const isPdf = doc.category === "Local.PDF";
-            if (isPdf && loadedPdfInstances.has(doc.id)) {
-                // Show PDF Tab Option
-                element.tabPdfBtn.classList.remove('hidden');
-                
-                // Clear any previous page rendering
-                element.pdfPagesContainer.innerHTML = '<div class="text-xs font-mono text-gray-400 py-12">Rendering PDF pages onto Canvas...</div>';
-                
-                // Auto switch view to show the uploaded PDF layout
-                switchViewTab('pdf');
-
-                // Render pages
-                const pdfInstance = loadedPdfInstances.get(doc.id);
-                renderPdfPages(pdfInstance);
-            } else {
-                // If it is a mock document or doesn't have an active memory instance
-                element.tabPdfBtn.classList.add('hidden');
-                element.pdfPagesContainer.innerHTML = "";
-                switchViewTab('text');
-            }
-
-            // Re-trigger MathJax to process formulas
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise();
-            }
-
-            // Scroll reader back to top
-            element.paperContainer.scrollTop = 0;
+            updatePdfBadge();
+            toggleClearButton();
         }
 
-        // Pixel-perfect canvas render of PDF pages directly into the workspace
-        async function renderPdfPages(pdfDoc) {
-            element.pdfPagesContainer.innerHTML = '';
-            
+        // --- Process a PDF file using PDF.js ---
+        async function processPdfFile(file) {
             try {
-                const totalPages = pdfDoc.numPages;
-                
-                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    const page = await pdfDoc.getPage(pageNum);
-                    
-                    // High-resolution viewport scaling for crisp text
-                    const viewport = page.getViewport({ scale: 1.5 });
-                    
-                    const canvas = document.createElement('canvas');
-                    canvas.className = "shadow-2xl border border-gray-700 bg-white mb-6 max-w-full rounded";
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    
-                    element.pdfPagesContainer.appendChild(canvas);
-                    
-                    await page.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise;
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                let fullText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    const pageText = content.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n\n';
                 }
+
+                const doc = {
+                    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                    title: file.name.replace(/\.pdf$/i, ''),
+                    authors: 'Unknown',
+                    category: 'cs.XX',
+                    arxivId: '',
+                    abstract: extractAbstract(fullText),
+                    body: fullText,
+                    type: 'pdf',
+                    file: file,
+                    pages: pdf.numPages
+                };
+                // Cache the PDF data and instance for the viewer
+                loadedPdfInstances.set(doc.id, pdf);
+                doc._pdfBuffer = arrayBuffer;
+                library.push(doc);
+                activeDocId = doc.id;
+                renderDocument(doc);
             } catch (err) {
-                console.error("PDF Rendering Error:", err);
-                element.pdfPagesContainer.innerHTML = `<div class="text-[#FF9E20] text-sm font-mono p-4">Error rendering PDF layout: ${err.message}</div>`;
+                console.error('PDF processing error:', err);
+                alert('Failed to process PDF: ' + file.name + '\n' + err.message);
             }
         }
 
-        function switchViewTab(tabType) {
-            activeReaderTab = tabType;
-            if (tabType === 'text') {
-                element.paperContainer.classList.remove('hidden');
-                element.pdfViewPane.classList.add('hidden');
-                
-                // Style Active Tab
-                element.tabTextBtn.className = "px-3 py-1 text-xs font-bold rounded bg-white text-gray-800 shadow-sm border border-gray-200 flex items-center space-x-1";
-                element.tabPdfBtn.className = "px-3 py-1 text-xs font-bold rounded text-gray-500 hover:text-gray-800 flex items-center space-x-1 transition-all";
-            } else {
-                element.paperContainer.classList.add('hidden');
-                element.pdfViewPane.classList.remove('hidden');
-                
-                // Style Active Tab
-                element.tabPdfBtn.className = "px-3 py-1 text-xs font-bold rounded bg-white text-gray-800 shadow-sm border border-gray-200 flex items-center space-x-1";
-                element.tabTextBtn.className = "px-3 py-1 text-xs font-bold rounded text-gray-500 hover:text-gray-800 flex items-center space-x-1 transition-all";
-            }
-        }
-
-        element.tabTextBtn.onclick = () => switchViewTab('text');
-        element.tabPdfBtn.onclick = () => switchViewTab('pdf');
-
-        function deleteDocument(id) {
-            library = library.filter(doc => doc.id !== id);
-            loadedPdfInstances.delete(id); // Clean from memory
-            saveLibraryToStorage();
-            renderDocumentList();
-            
-            if (activeDocId === id) {
-                if (library.length > 0) {
-                    setActiveDocument(library[0].id);
-                } else {
-                    // Empty state content
-                    element.paperTitle.textContent = "Your Library is Empty";
-                    element.paperAuthors.textContent = "";
-                    element.paperMeta.innerHTML = "";
-                    element.paperAbstract.textContent = "Please upload or paste a paper to begin.";
-                    element.paperBody.innerHTML = "";
-                    element.tabPdfBtn.classList.add('hidden');
-                    element.pdfPagesContainer.innerHTML = "";
-                    switchViewTab('text');
-                }
-            }
-        }
-
-        // Search engine utilities
-        function highlightSearch(text) {
-            if (!searchQuery) return text;
-            const regex = new RegExp(`(${escapeRegExp(searchQuery)})`, 'gi');
-            return text.replace(regex, '<span class="highlight-match">$1</span>');
-        }
-
-        // Escape regular expression special characters helper
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        // 4. File Upload & PDF Parsing Engine
-        element.dropZone.onclick = () => element.fileInput.click();
-        
-        element.fileInput.onchange = async (e) => {
-            await handleUploadedFiles(e.target.files);
-        };
-
-        // Drag and Drop listeners
-        element.dropZone.ondragover = (e) => {
-            e.preventDefault();
-            element.dropZone.classList.add('border-red-700', 'bg-[#215e611a]');
-        };
-
-        element.dropZone.ondragleave = () => {
-            element.dropZone.classList.remove('border-red-700', 'bg-[#215e611a]');
-        };
-
-        element.dropZone.ondrop = async (e) => {
-            e.preventDefault();
-            element.dropZone.classList.remove('border-red-700', 'bg-[#215e611a]');
-            if (e.dataTransfer.files) {
-                await handleUploadedFiles(e.dataTransfer.files);
-            }
-        };
-
-        async function handleUploadedFiles(files) {
-            if (files.length === 0) return;
-            
-            // Loop through and validate limits first
-            let pdfsToUpload = 0;
-            for (let file of files) {
-                if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
-                    pdfsToUpload++;
-                }
-            }
-
-            const currentPdfCount = getPdfCount();
-            if (currentPdfCount + pdfsToUpload > 2) {
-                showSystemMessage(`Upload Blocked: Maximum 2 PDFs allowed in your library (Currently: ${currentPdfCount}/2). Delete an existing PDF to make room.`, "error");
-                element.fileInput.value = "";
-                return;
-            }
-
-            element.uploadStatus.classList.remove('hidden');
-            element.uploadStatus.textContent = "Loading...";
-
-            for (let file of files) {
-                try {
-                    if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
-                        element.uploadStatus.textContent = "Parsing PDF & Indexing Content...";
-                        await parsePdfFile(file);
-                    } else {
-                        element.uploadStatus.textContent = "Reading Plain Text...";
-                        await parseTextFile(file);
-                    }
-                } catch (err) {
-                    console.error("Error reading file:", err);
-                    showSystemMessage("Error parsing file: " + file.name, "error");
-                }
-            }
-
-            element.uploadStatus.classList.add('hidden');
-            element.fileInput.value = ""; // Reset input
-        }
-
-        function parseTextFile(file) {
-            return new Promise((resolve, reject) => {
+        // --- Process a text file ---
+        async function processTextFile(file) {
+            return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const content = e.target.result;
-                    const firstLine = content.split('\n')[0] || "Untitled Plain Text Document";
-                    
-                    const newDoc = {
-                        id: 'text-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-                        title: firstLine.substring(0, 80) || file.name,
-                        authors: "Uploaded User Document",
-                        category: "Local.TX",
-                        arxivId: "Local File / Plain Text",
-                        abstract: "Extracted Plain Text content from uploaded source file named: " + file.name,
-                        body: content
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(l => l.trim());
+                    const firstLine = lines[0] || file.name.replace(/\.txt$/i, '');
+                    const doc = {
+                        id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                        title: firstLine.length > 80 ? firstLine.slice(0, 80) + '...' : firstLine,
+                        authors: 'Unknown',
+                        category: 'cs.XX',
+                        arxivId: '',
+                        abstract: extractAbstract(text),
+                        body: text,
+                        type: 'text',
+                        file: file
                     };
-
-                    library.unshift(newDoc);
-                    saveLibraryToStorage();
-                    renderDocumentList();
-                    setActiveDocument(newDoc.id);
+                    library.push(doc);
+                    activeDocId = doc.id;
+                    renderDocument(doc);
                     resolve();
                 };
-                reader.onerror = reject;
+                reader.onerror = () => {
+                    console.error('Text file read error:', file.name);
+                    alert('Failed to read text file: ' + file.name);
+                    resolve();
+                };
                 reader.readAsText(file);
             });
         }
 
-        async function parsePdfFile(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            
-            let fullText = "";
-            let numPages = pdf.numPages;
-            
-            // Collect page text for indexing and embedding
-            for (let i = 1; i <= numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                const pageText = textContent.items.map(item => item.str).join(" ");
-                fullText += `\n\n### Page ${i}\n` + pageText;
-            }
-
-            // Simple heuristics to isolate Title & Authors
-            const textLines = fullText.split('\n').filter(l => l.trim().length > 0);
-            let extractedTitle = file.name.replace(/\.pdf$/i, '');
-            let extractedAuthors = "Extracted PDF Author Metadata";
-            let extractedAbstract = "No Abstract isolated. Viewing full extracted text layout.";
-
-            if (textLines.length > 0) {
-                const candidateLines = textLines.slice(0, 10);
-                const longCandidate = candidateLines.find(l => l.length > 20 && !l.toLowerCase().includes('page'));
-                if (longCandidate) extractedTitle = longCandidate.trim();
-            }
-
-            // Attempt to isolate Abstract
-            const lowerFull = fullText.toLowerCase();
-            const abstractIdx = lowerFull.indexOf("abstract");
-            if (abstractIdx !== -1) {
-                const start = abstractIdx + 8;
-                let snippet = fullText.substring(start, start + 800);
-                const introIdx = snippet.toLowerCase().indexOf("introduction");
-                if (introIdx !== -1) {
-                    snippet = snippet.substring(0, introIdx);
-                }
-                extractedAbstract = snippet.trim();
-            }
-
-            const docId = 'pdf-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-
-            const newDoc = {
-                id: docId,
-                title: extractedTitle,
-                authors: extractedAuthors,
-                category: "Local.PDF",
-                arxivId: `Local PDF (${numPages} pages)`,
-                abstract: extractedAbstract,
-                body: fullText
-            };
-
-            // Store PDF document instance directly in the memory Map
-            loadedPdfInstances.set(docId, pdf);
-
-            library.unshift(newDoc);
-            saveLibraryToStorage();
-            renderDocumentList();
-            setActiveDocument(docId);
+        // --- Naive abstract extraction from text blocks ---
+        function extractAbstract(text) {
+            const match = text.match(/abstract\s*\n([\s\S]*?)(?:\n\s*(?:introduction|1\.?\s*introduction|keywords|related\s*work|background))/i);
+            if (match) return match[1].trim().slice(0, 600);
+            // Try "Abstract." pattern (period instead of newline)
+            const match2 = text.match(/abstract\.?\s*([^.]+(?:\.[^.!?]*){0,4})/i);
+            if (match2) return match2[1].trim().slice(0, 600);
+            return text.slice(0, 300).trim();
         }
 
-        // 5. Keyword search action
-        element.librarySearch.addEventListener('input', (e) => {
-            searchQuery = e.target.value.trim();
-            if (searchQuery.length > 0) {
-                element.clearSearchBtn.classList.remove('hidden');
-            } else {
-                element.clearSearchBtn.classList.add('hidden');
-            }
-            renderDocumentList();
-            // Re-apply highlights inside the current active document
-            if (activeDocId) {
-                setActiveDocument(activeDocId);
-            }
-        });
+        // ============================================================================
+        // 5. Document Rendering
+        // ============================================================================
 
-        element.clearSearchBtn.onclick = () => {
-            element.librarySearch.value = "";
-            searchQuery = "";
-            element.clearSearchBtn.classList.add('hidden');
-            renderDocumentList();
-            if (activeDocId) {
-                setActiveDocument(activeDocId);
-            }
-        };
+        // --- Render the selected document in the main reader pane ---
+        function renderDocument(doc) {
+            if (!doc) return;
+            document.getElementById('paperTitle').textContent = doc.title;
+            document.getElementById('paperAuthors').textContent = doc.authors;
 
-        // 6. Manual Paste Modal logic
-        element.manualPasteBtn.onclick = () => {
-            element.pasteModal.classList.remove('hidden');
-        };
-
-        element.closePasteModal.onclick = element.cancelPaste.onclick = () => {
-            element.pasteModal.classList.add('hidden');
-        };
-
-        element.submitPaste.onclick = () => {
-            const title = element.pasteTitle.value.trim() || "Untitled Manual Entry";
-            const authors = element.pasteAuthors.value.trim() || "Anonymous";
-            const category = element.pasteCategory.value.trim() || "cs.AI";
-            const arxivId = element.pasteArXivId.value.trim() || "Manual Entry";
-            const abstract = element.pasteAbstract.value.trim() || "No Abstract provided.";
-            const body = element.pasteBody.value.trim() || "No paper body content provided.";
-
-            const newDoc = {
-                id: 'paste-' + Date.now(),
-                title,
-                authors,
-                category,
-                arxivId,
-                abstract,
-                body
-            };
-
-            library.unshift(newDoc);
-            saveLibraryToStorage();
-            renderDocumentList();
-            setActiveDocument(newDoc.id);
-
-            // Clean inputs & close
-            element.pasteTitle.value = '';
-            element.pasteAuthors.value = '';
-            element.pasteCategory.value = '';
-            element.pasteArXivId.value = '';
-            element.pasteAbstract.value = '';
-            element.pasteBody.value = '';
-            element.pasteModal.classList.add('hidden');
-        };
-
-        // Clear All Docs
-        element.clearAllDocs.onclick = () => {
-            if (confirm("Are you sure you want to delete all papers inside your local Notebook library?")) {
-                library = [];
-                loadedPdfInstances.clear();
-                saveLibraryToStorage();
-                renderDocumentList();
-                element.paperTitle.textContent = "No Research Papers Loaded";
-                element.paperAuthors.textContent = "";
-                element.paperMeta.innerHTML = "";
-                element.paperAbstract.textContent = "Please upload or drag a PDF/Text paper in the sidebar.";
-                element.paperBody.innerHTML = "";
-                element.tabPdfBtn.classList.add('hidden');
-                element.pdfPagesContainer.innerHTML = "";
-                switchViewTab('text');
-                updateDocCountUI();
-            }
-        };
-
-        // Fullscreen Reader toggle
-        let isFullscreen = false;
-        element.fullscreenBtn.onclick = () => {
-            const sidebar = document.querySelector('aside');
-            if (!isFullscreen) {
-                sidebar.classList.add('hidden');
-                element.fullscreenBtn.innerHTML = `<i data-lucide="minimize" class="w-4 h-4"></i>`;
-            } else {
-                sidebar.classList.remove('hidden');
-                element.fullscreenBtn.innerHTML = `<i data-lucide="maximize" class="w-4 h-4"></i>`;
-            }
-            isFullscreen = !isFullscreen;
-            lucide.createIcons();
-        };
-
-        // 7. API Settings Modal
-        element.apiKeyBtn.onclick = () => {
-            element.apiKeyInput.value = apiKey;
-            element.apiKeyModal.classList.remove('hidden');
-        };
-
-        element.closeApiModal.onclick = element.cancelApiKey.onclick = () => {
-            element.apiKeyModal.classList.add('hidden');
-        };
-
-        element.saveApiKey.onclick = () => {
-            apiKey = element.apiKeyInput.value.trim();
-            localStorage.setItem("gemini_api_key", apiKey);
-            updateApiKeyStatus();
-            element.apiKeyModal.classList.add('hidden');
-        };
-
-        function updateApiKeyStatus() {
-            if (apiKey) {
-                element.apiKeyBtnText.textContent = "Gemini Connected";
-                element.apiKeyBtn.className = "flex items-center space-x-1 px-3 py-1.5 border border-green-700 rounded text-green-700 hover:bg-green-50 text-xs font-semibold transition-colors";
-            } else {
-                element.apiKeyBtnText.textContent = "Connect Gemini API";
-                element.apiKeyBtn.className = "flex items-center space-x-1 px-3 py-1.5 border border-red-700 rounded text-red-700 hover:bg-red-50 text-xs font-semibold transition-colors";
-            }
-        }
-
-        // 8. Bottom-Right Research Chat Assistant Interface
-        let chatOpen = false;
-        element.chatToggleBtn.onclick = () => {
-            if (!chatOpen) {
-                element.chatWidget.classList.remove('hidden');
-                element.chatInput.focus();
-            } else {
-                element.chatWidget.classList.add('hidden');
-            }
-            chatOpen = !chatOpen;
-        };
-
-        element.chatCollapseBtn.onclick = () => {
-            element.chatWidget.classList.add('hidden');
-            chatOpen = false;
-        };
-
-        // Reset/New Chat action
-        element.newChatBtn.onclick = () => {
-            element.chatMessages.innerHTML = '';
-            appendWelcomeMessage();
-        };
-
-        function appendWelcomeMessage() {
-            const welcomeRow = document.createElement('div');
-            welcomeRow.className = "flex items-start space-x-3";
-            welcomeRow.innerHTML = `
-                <div class="bg-red-100 text-red-800 p-1.5 rounded mt-0.5 shrink-0">
-                    <i data-lucide="bot" class="w-4 h-4"></i>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm max-w-[85%]">
-                    <p class="text-xs text-gray-700">
-                        Greetings! I am your <strong>arXiv NotebookLM Assistant</strong>. I have read your loaded library. 
-                        <br><br>
-                        How can I help you analyze, break down methodologies, or compare results across these research works today?
-                    </p>
-                </div>
+            const subjects = doc.category || 'cs.XX';
+            const arxivDisplay = doc.arxivId || 'arXiv:----.----';
+            document.getElementById('paperMeta').innerHTML = `
+                <div><strong>Subjects:</strong> ${subjects}</div>
+                <div><strong>Submitted on:</strong> ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
             `;
-            element.chatMessages.appendChild(welcomeRow);
-            lucide.createIcons();
+
+            document.getElementById('paperAbstract').textContent = doc.abstract || 'No abstract available.';
+
+            // Render body — try markdown first, fall back to plain paragraphs
+            const bodyEl = document.getElementById('paperBody');
+            try {
+                if (doc.body.includes('##') || doc.body.includes('**') || doc.body.includes('###') || doc.body.includes('```')) {
+                    bodyEl.innerHTML = marked.parse(doc.body);
+                } else {
+                    bodyEl.innerHTML = doc.body.split('\n').filter(l => l.trim()).map(p => `<p>${p}</p>`).join('');
+                }
+            } catch (e) {
+                bodyEl.innerHTML = doc.body.split('\n').filter(l => l.trim()).map(p => `<p>${escapeHtml(p)}</p>`).join('');
+            }
+
+            // Update sidebar active state
+            document.querySelectorAll('.doc-item').forEach(el => el.classList.remove('bg-red-50', 'border-red-700'));
+            const activeEl = document.querySelector(`[data-doc-id="${doc.id}"]`);
+            if (activeEl) activeEl.classList.add('bg-red-50', 'border-red-700');
+
+            // Update header tags
+            document.getElementById('activeCategoryTag').textContent = doc.category || 'cs.XX';
+            document.getElementById('activeArXivId').textContent = doc.arxivId || 'arXiv:----.---- [cs.XX]';
+
+            // Switch to text tab (PDF viewer hidden by default)
+            document.getElementById('paperContainer').classList.remove('hidden');
+            document.getElementById('pdfViewPane').classList.add('hidden');
+            // Show PDF tab only for PDF documents
+            if (doc.type === 'pdf') {
+                document.getElementById('tabPdfBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('tabPdfBtn').classList.add('hidden');
+            }
+            // Invalidate cached PDF viewer so it re-renders when switching to PDF tab
+            document.getElementById('pdfPagesContainer').dataset.docId = '';
+            activeReaderTab = 'text';
+            document.getElementById('tabTextBtn').classList.add('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-200');
+
+            // Re-render MathJax if available
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch(() => {});
+            }
         }
 
-        // Context scope indicators in bottom right trigger
-        element.chatScope.onchange = () => {
-            const scopeVal = element.chatScope.value;
-            if (scopeVal === 'active') {
-                element.chatContextLabel.textContent = "Active Doc";
-            } else {
-                element.chatContextLabel.textContent = "All Docs";
-            }
-        };
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
 
-        // Suggestion chips
-        document.querySelectorAll('.suggestion-chip').forEach(chip => {
-            chip.onclick = () => {
-                element.chatInput.value = chip.textContent.trim();
-                element.chatInput.focus();
-            };
+        // --- Render the sidebar document list ---
+        function renderDocumentList() {
+            const list = document.getElementById('documentList');
+            const query = document.getElementById('librarySearch').value.toLowerCase().trim();
+
+            let filtered = library;
+            if (query) {
+                filtered = library.filter(d =>
+                    d.title.toLowerCase().includes(query) ||
+                    d.body.toLowerCase().includes(query) ||
+                    (d.abstract && d.abstract.toLowerCase().includes(query))
+                );
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">${query ? 'No matching documents found.' : 'No documents uploaded yet.'}</p>`;
+                return;
+            }
+
+            list.innerHTML = filtered.map(doc => {
+                const isActive = doc.id === activeDocId;
+                const typeBadge = doc.type === 'pdf'
+                    ? `<span class="text-[9px] text-blue-600 font-mono">PDF${doc.pages ? ' · ' + doc.pages + 'p' : ''}</span>`
+                    : `<span class="text-[9px] text-green-600 font-mono">TXT</span>`;
+                const highlight = isActive ? 'bg-red-50 border-red-700' : 'border-gray-200 hover:border-red-300 hover:bg-gray-50';
+                return `
+                    <div class="doc-item border ${highlight} rounded p-2.5 cursor-pointer transition-all" data-doc-id="${doc.id}">
+                        <div class="flex items-start justify-between">
+                            <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 flex-1">${escapeHtml(doc.title)}</h4>
+                            ${typeBadge}
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1">${escapeHtml(doc.authors)}</p>
+                        ${doc.abstract ? `<p class="text-[10px] text-gray-400 mt-1 line-clamp-2">${escapeHtml(doc.abstract.slice(0, 150))}</p>` : ''}
+                        <div class="flex justify-between items-center mt-1.5">
+                            <span class="text-[9px] font-mono text-gray-400">${doc.category || 'cs.XX'}</span>
+                            <button class="delete-doc text-[9px] text-red-600 hover:text-red-800" data-doc-id="${doc.id}">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Attach click handlers to doc items
+            document.querySelectorAll('.doc-item').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    if (e.target.closest('.delete-doc')) return;
+                    const id = el.dataset.docId;
+                    const doc = library.find(d => d.id === id);
+                    if (doc) {
+                        activeDocId = id;
+                        renderDocument(doc);
+                        renderDocumentList();
+                    }
+                });
+            });
+
+            // Attach delete handlers
+            document.querySelectorAll('.delete-doc').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.docId;
+                    const idx = library.findIndex(d => d.id === id);
+                    if (idx > -1) {
+                        library.splice(idx, 1);
+                        if (activeDocId === id) {
+                            activeDocId = library.length > 0 ? library[library.length - 1].id : null;
+                            if (activeDocId) {
+                                renderDocument(library.find(d => d.id === activeDocId));
+                            } else {
+                                resetToWelcome();
+                            }
+                        }
+                        renderDocumentList();
+                        updatePdfBadge();
+                        toggleClearButton();
+                    }
+                });
+            });
+
+            document.getElementById('docCount').textContent = library.length;
+        }
+
+        // --- Reset main pane to the initial welcome screen ---
+        function resetToWelcome() {
+            document.getElementById('paperTitle').textContent = 'Welcome to arXiv-NotebookLM Assistant';
+            document.getElementById('paperAuthors').textContent = 'Gemini & arXiv Integration Platform';
+            document.getElementById('paperMeta').innerHTML = `
+                <div><strong>Subjects:</strong> Computation and Language (cs.CL); Machine Learning (cs.LG)</div>
+                <div><strong>Submitted on:</strong> ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (this version)</div>
+            `;
+            document.getElementById('paperAbstract').textContent = 'Select a research paper from the sidebar library or upload your own files to get started.';
+            document.getElementById('paperBody').innerHTML = `<p>Upload or paste research papers to get started.</p>`;
+            document.getElementById('activeCategoryTag').textContent = 'cs.CL';
+            document.getElementById('activeArXivId').textContent = 'arXiv:2401.00000 [cs.CL]';
+        }
+
+        // ============================================================================
+        // 6. PDF Count Badge
+        // ============================================================================
+        function updatePdfBadge() {
+            const count = library.filter(d => d.type === 'pdf').length;
+            document.getElementById('pdfLimitBadge').textContent = 'PDFs: ' + count + '/2';
+        }
+
+        // ============================================================================
+        // 7. Clear All Button
+        // ============================================================================
+        function toggleClearButton() {
+            const btn = document.getElementById('clearAllDocs');
+            btn.classList.toggle('hidden', library.length === 0);
+        }
+
+        document.getElementById('clearAllDocs').addEventListener('click', () => {
+            if (library.length === 0) return;
+            if (confirm('Remove all documents from your library?')) {
+                library = [];
+                activeDocId = null;
+                loadedPdfInstances.clear();
+                renderDocumentList();
+                updatePdfBadge();
+                toggleClearButton();
+                resetToWelcome();
+            }
         });
 
-        // Chat Form Submission
-        element.chatForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const messageText = element.chatInput.value.trim();
-            if (!messageText) return;
+        // ============================================================================
+        // 8. Search Functionality
+        // ============================================================================
+        document.getElementById('librarySearch').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', !searchQuery);
+            renderDocumentList();
 
-            // Clear input field immediately
-            element.chatInput.value = "";
-
-            // Render User message
-            appendChatMessage("user", messageText);
-
-            // Fetch contextual information
-            const contextData = assembleChatContext();
-            
-            // Setup loading indicator in chatbox
-            const loadingId = appendChatMessage("ai", "Analyzing research materials...", true);
-
-            try {
-                const aiResponse = await generateGeminiResponse(messageText, contextData);
-                removeLoadingMessage(loadingId);
-                appendChatMessage("ai", aiResponse);
-            } catch (err) {
-                console.error("Gemini API Error:", err);
-                removeLoadingMessage(loadingId);
-                appendChatMessage("ai", `<span class="text-red-700 font-bold">API Query Error:</span> ${err.message || 'Check your internet connection or API Key connection.'}`);
-            }
-        };
-
-        function appendChatMessage(sender, text, isLoading = false) {
-            const msgId = 'msg-' + Date.now() + '-' + Math.round(Math.random() * 100);
-            const msgRow = document.createElement('div');
-            msgRow.id = msgId;
-            msgRow.className = "flex items-start space-x-3";
-
-            if (sender === "user") {
-                msgRow.innerHTML = `
-                    <div class="flex-1"></div>
-                    <div class="bg-gray-200 border border-gray-300 rounded-lg p-3 shadow-sm max-w-[85%]">
-                        <p class="text-xs text-gray-800 leading-relaxed font-sans">${escapeHTML(text)}</p>
-                    </div>
-                    <div class="bg-gray-400 text-white p-1.5 rounded mt-0.5 shrink-0">
-                        <i data-lucide="user" class="w-4 h-4"></i>
-                    </div>
-                `;
+            if (activeDocId && searchQuery) {
+                highlightTextInBody(searchQuery);
             } else {
-                let markdownParsed = marked.parse(text);
-                
-                msgRow.innerHTML = `
-                    <div class="bg-red-100 text-red-800 p-1.5 rounded mt-0.5 shrink-0">
-                        <i data-lucide="bot" class="w-4 h-4"></i>
-                    </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm max-w-[85%] text-xs prose">
-                        ${isLoading ? `
-                            <div class="flex items-center space-x-2 text-gray-500 font-mono">
-                                <span class="animate-bounce font-bold">.</span>
-                                <span class="animate-bounce delay-75 font-bold">.</span>
-                                <span class="animate-bounce delay-150 font-bold">.</span>
-                                <span>${text}</span>
-                            </div>
-                        ` : markdownParsed}
-                    </div>
-                `;
-            }
-
-            element.chatMessages.appendChild(msgRow);
-            element.chatMessages.scrollTop = element.chatMessages.scrollHeight;
-            lucide.createIcons();
-
-            // Re-render LaTeX math
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise();
-            }
-
-            return msgId;
-        }
-
-        function removeLoadingMessage(id) {
-            const elem = document.getElementById(id);
-            if (elem) elem.remove();
-        }
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        // Context Engine: Collects abstract & full body details according to selected scope
-        function assembleChatContext() {
-            const scope = element.chatScope.value;
-            let resultText = "";
-
-            if (scope === "active" && activeDocId) {
-                const doc = library.find(d => d.id === activeDocId);
-                if (doc) {
-                    resultText = `--- Context: ACTIVE RESEARCH PAPER ---\nTitle: ${doc.title}\nAuthors: ${doc.authors}\nAbstract: ${doc.abstract}\nFull Text Details:\n${doc.body}`;
-                }
-            } else {
-                resultText = "--- Context: ALL LIBRARY RESEARCH PAPERS ---\n";
-                library.forEach((doc, idx) => {
-                    resultText += `\nPaper [${idx + 1}]:\nTitle: ${doc.title}\nAuthors: ${doc.authors}\nAbstract: ${doc.abstract}\nContent Sample: ${doc.body.substring(0, 3000)}\n`;
+                // Remove highlights when search is cleared
+                document.querySelectorAll('.highlight-match').forEach(el => {
+                    const parent = el.parentNode;
+                    parent.replaceChild(document.createTextNode(el.textContent), el);
+                    parent.normalize();
                 });
             }
+        });
 
-            return resultText;
+        document.getElementById('clearSearchBtn').addEventListener('click', () => {
+            document.getElementById('librarySearch').value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderDocumentList();
+            document.querySelectorAll('.highlight-match').forEach(el => {
+                const parent = el.parentNode;
+                parent.replaceChild(document.createTextNode(el.textContent), el);
+                parent.normalize();
+            });
+        });
+
+        function highlightTextInBody(query) {
+            if (!query) return;
+            const bodyEl = document.getElementById('paperBody');
+            // Remove existing highlights first
+            document.querySelectorAll('.highlight-match').forEach(el => {
+                const parent = el.parentNode;
+                parent.replaceChild(document.createTextNode(el.textContent), el);
+                parent.normalize();
+            });
+            // Walk text nodes and highlight matches
+            const walker = document.createTreeWalker(bodyEl, NodeFilter.SHOW_TEXT);
+            const textNodes = [];
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (node.textContent.toLowerCase().includes(query.toLowerCase())) {
+                    textNodes.push(node);
+                }
+            }
+            // Process last-to-first to preserve offsets
+            textNodes.reverse().forEach(node => {
+                const text = node.textContent;
+                const lower = text.toLowerCase();
+                const qLower = query.toLowerCase();
+                let idx = lower.indexOf(qLower);
+                if (idx === -1) return;
+                const fragment = document.createDocumentFragment();
+                fragment.appendChild(document.createTextNode(text.slice(0, idx)));
+                const mark = document.createElement('span');
+                mark.className = 'highlight-match';
+                mark.textContent = text.slice(idx, idx + query.length);
+                fragment.appendChild(mark);
+                fragment.appendChild(document.createTextNode(text.slice(idx + query.length)));
+                node.parentNode.replaceChild(fragment, node);
+            });
         }
 
-        // 9. API Handler with smart model fallback sequence + exponential backoff retry.
-        // This solves 404 / 400 not found errors gracefully if the target model is unsupported in the user's specific tier.
-        async function generateGeminiResponse(userQuery, contextContent) {
-            if (!apiKey) {
-                return `**Please enter a Gemini API Key to unlock real-time queries.** To help you check layout responses without an API key right now, here is what I can extract from the context:
-                
-                - **Primary Paper Topics**: Deep learning network structures, Transformer self-attention layers, GAN training minimax game strategies.
-                - **Context Volume**: Currently analyzing ${library.length} papers.
-                - **To connect**: Click the Red "**Connect Gemini API**" button in the upper right. It is 100% secure!`;
+        // ============================================================================
+        // 9. Paste Text Modal
+        // ============================================================================
+        document.getElementById('manualPasteBtn').addEventListener('click', () => {
+            document.getElementById('pasteModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closePasteModal').addEventListener('click', () => {
+            document.getElementById('pasteModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelPaste').addEventListener('click', () => {
+            document.getElementById('pasteModal').classList.add('hidden');
+        });
+
+        // Click outside the modal to close
+        document.getElementById('pasteModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('pasteModal').classList.add('hidden');
             }
+        });
 
-            const systemPrompt = `You are an expert academic research partner designed for ArXiv-style analysis.
-            Use the provided context to answer the user's inquiry thoroughly.
-            Cite concrete details, authors, math equations, and methodologies where appropriate.
-            If the user asks about equations or math models, format the answer with proper LaTeX equations inside single '$' for inline and double '$$' for block equations.
-            Be crisp, objective, precise, and adhere to mathematical rigor.`;
-
-            const requestPayload = {
-                contents: [
-                    {
-                        parts: [
-                            { text: `Context:\n${contextContent}\n\nQuestion: ${userQuery}` }
-                        ]
-                    }
-                ],
-                systemInstruction: {
-                    parts: [
-                        { text: systemPrompt }
-                    ]
-                }
+        document.getElementById('submitPaste').addEventListener('click', () => {
+            const title = document.getElementById('pasteTitle').value.trim();
+            const body = document.getElementById('pasteBody').value.trim();
+            if (!title || !body) {
+                alert('Please provide at least a Title and Full-Text Content.');
+                return;
+            }
+            const doc = {
+                id: 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                title: title,
+                authors: document.getElementById('pasteAuthors').value.trim() || 'Unknown',
+                category: document.getElementById('pasteCategory').value.trim() || 'cs.XX',
+                arxivId: document.getElementById('pasteArXivId').value.trim() || '',
+                abstract: document.getElementById('pasteAbstract').value.trim() || '',
+                body: body,
+                type: 'text'
             };
+            library.push(doc);
+            activeDocId = doc.id;
+            renderDocument(doc);
+            renderDocumentList();
+            updatePdfBadge();
+            toggleClearButton();
+            // Clear form fields
+            document.getElementById('pasteTitle').value = '';
+            document.getElementById('pasteAuthors').value = '';
+            document.getElementById('pasteCategory').value = '';
+            document.getElementById('pasteArXivId').value = '';
+            document.getElementById('pasteAbstract').value = '';
+            document.getElementById('pasteBody').value = '';
+            document.getElementById('pasteModal').classList.add('hidden');
+        });
 
-            // Order of preference: stable 2.5 flash, the requested beta preview, and a universal 1.5 flash backup
-            const modelsToTry = [
-                "gemini-2.5-flash",
-                "gemini-2.5-flash-preview-09-2025",
-                "gemini-1.5-flash"
-            ];
+        // ============================================================================
+        // 10. PDF Viewer: Render actual PDF pages as canvases
+        // ============================================================================
 
-            let lastError = null;
+        async function renderPdfInViewer() {
+            const doc = library.find(d => d.id === activeDocId);
+            if (!doc || doc.type !== 'pdf') return;
 
-            for (const model of modelsToTry) {
-                const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                // Fallback clean path
-                const cleanEndpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                
-                let attempt = 0;
-                const maxAttempts = 3; // Tried 3 times per model configuration
-                
-                while (attempt < maxAttempts) {
-                    try {
-                        const response = await fetch(cleanEndpointUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(requestPayload)
-                        });
+            const container = document.getElementById('pdfPagesContainer');
 
-                        if (response.ok) {
-                            const result = await response.json();
-                            const answerText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                            if (answerText) {
-                                // Dynamically update active engine UI to reflect what model was successful
-                                const label = model.replace("-", " ").toUpperCase();
-                                element.activeEngineText.textContent = label;
-                                element.chatEngineSubtitle.textContent = label + " Engine";
-                                return answerText;
-                            }
-                            throw new Error("Empty response structure received from Gemini API.");
-                        }
+            // Check if already rendered for this doc
+            if (container.dataset.docId === doc.id) return;
 
-                        // Check for model-not-found / unsupported errors to quickly swap models
-                        if (response.status === 404 || response.status === 400) {
-                            const errData = await response.json().catch(() => ({}));
-                            const msg = errData.error?.message || "";
-                            if (msg.toLowerCase().includes("not found") || msg.toLowerCase().includes("not supported") || msg.toLowerCase().includes("unsupported")) {
-                                lastError = new Error(msg || `Model ${model} not supported.`);
-                                break; // Break out of attempts loop to try next model
-                            }
-                        }
+            container.innerHTML = '<p class="text-white text-sm">Loading PDF pages...</p>';
+            container.dataset.docId = doc.id;
 
-                        if (response.status === 421 || response.status === 429 || response.status >= 500) {
-                            attempt++;
-                            if (attempt >= maxAttempts) {
-                                break;
-                            }
-                            const backoffDelay = Math.pow(2, attempt - 1) * 1000;
-                            await new Promise(r => setTimeout(r, backoffDelay));
-                            continue;
-                        }
+            try {
+                // Get the PDF instance — either from cache or load fresh
+                let pdf = loadedPdfInstances.get(doc.id);
+                let buffer = doc._pdfBuffer;
 
-                        const errData = await response.json().catch(() => ({}));
-                        throw new Error(errData.error?.message || `API HTTP Error ${response.status}`);
-
-                    } catch (error) {
-                        lastError = error;
-                        if (attempt >= maxAttempts - 1) {
-                            break;
-                        }
-                        attempt++;
-                        const backoffDelay = Math.pow(2, attempt - 1) * 1000;
-                        await new Promise(r => setTimeout(r, backoffDelay));
-                    }
+                if (!buffer) {
+                    const file = doc.file;
+                    if (!file) throw new Error('PDF file data not available');
+                    buffer = await file.arrayBuffer();
+                    doc._pdfBuffer = buffer;
                 }
+
+                if (!pdf) {
+                    pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+                    loadedPdfInstances.set(doc.id, pdf);
+                }
+
+                container.innerHTML = '';
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+
+                    // Scale — fit to container width while keeping reasonable size
+                    const containerWidth = container.clientWidth || 700;
+                    const unscaled = page.getViewport({ scale: 1 });
+                    const scale = Math.min(1.8, (containerWidth - 40) / unscaled.width);
+                    const viewport = page.getViewport({ scale });
+
+                    const pageWrapper = document.createElement('div');
+                    pageWrapper.className = 'bg-white shadow-xl rounded overflow-hidden';
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.className = 'w-full';
+
+                    const ctx = canvas.getContext('2d');
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                    pageWrapper.appendChild(canvas);
+                    container.appendChild(pageWrapper);
+                }
+            } catch (err) {
+                console.error('PDF rendering error:', err);
+                container.innerHTML = '<p class="text-red-400 text-sm">Failed to render PDF: ' + err.message + '</p>';
+                container.dataset.docId = '';
             }
-
-            throw lastError || new Error("All loaded Gemini model iterations failed to respond.");
         }
 
-        // Helper notification banner
-        function showSystemMessage(text, type = "success") {
-            const banner = document.createElement('div');
-            banner.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded text-xs font-mono font-bold shadow-lg transition-all ${
-                type === "error" ? "bg-red-700 text-white" : "bg-gray-900 text-white"
-            }`;
-            banner.textContent = text;
-            document.body.appendChild(banner);
-            setTimeout(() => banner.remove(), 4000);
+        // ============================================================================
+        // 11. Tab Switching (Text ↔ PDF)
+        // ============================================================================
+        document.getElementById('tabTextBtn').addEventListener('click', () => {
+            document.getElementById('paperContainer').classList.remove('hidden');
+            document.getElementById('pdfViewPane').classList.add('hidden');
+            activeReaderTab = 'text';
+            document.getElementById('tabTextBtn').classList.add('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-200');
+            document.getElementById('tabPdfBtn').classList.remove('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-200');
+            document.getElementById('tabPdfBtn').classList.add('text-gray-500');
+        });
+
+        document.getElementById('tabPdfBtn').addEventListener('click', () => {
+            document.getElementById('paperContainer').classList.add('hidden');
+            document.getElementById('pdfViewPane').classList.remove('hidden');
+            activeReaderTab = 'pdf';
+            document.getElementById('tabPdfBtn').classList.add('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-200');
+            document.getElementById('tabTextBtn').classList.remove('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-200');
+            document.getElementById('tabTextBtn').classList.add('text-gray-500');
+            // Render actual PDF pages
+            renderPdfInViewer();
+        });
+
+        // ============================================================================
+        // 12. Fullscreen (Toggle Sidebar)
+        // ============================================================================
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('hidden');
+            const icon = document.getElementById('fullscreenBtn').querySelector('i');
+            const current = icon.getAttribute('data-lucide');
+            icon.setAttribute('data-lucide', current === 'maximize' ? 'minimize' : 'maximize');
+            lucide.createIcons();
+        });
+
+        // ============================================================================
+        // 13. API Key Modal
+        // ============================================================================
+        const apiKeyBtn = document.getElementById('apiKeyBtn');
+        const apiKeyModal = document.getElementById('apiKeyModal');
+
+        apiKeyBtn.addEventListener('click', () => {
+            apiKeyModal.classList.remove('hidden');
+            if (apiKey) {
+                document.getElementById('apiKeyInput').value = apiKey;
+            }
+        });
+
+        document.getElementById('closeApiModal').addEventListener('click', () => {
+            apiKeyModal.classList.add('hidden');
+        });
+
+        document.getElementById('cancelApiKey').addEventListener('click', () => {
+            apiKeyModal.classList.add('hidden');
+        });
+
+        apiKeyModal.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                apiKeyModal.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('saveApiKey').addEventListener('click', () => {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (!key) {
+                alert('Please enter a valid Gemini API key.');
+                return;
+            }
+            apiKey = key;
+            localStorage.setItem('gemini_api_key', key);
+            document.getElementById('apiKeyBtnText').textContent = '✓ API Connected';
+            document.getElementById('apiKeyBtnText').classList.add('text-green-600');
+            apiKeyModal.classList.add('hidden');
+        });
+
+        // Restore API key display if already set
+        if (apiKey) {
+            document.getElementById('apiKeyBtnText').textContent = '✓ API Connected';
+            document.getElementById('apiKeyBtnText').classList.add('text-green-600');
         }
 
-        // Start App
-        window.onload = () => {
-            updateApiKeyStatus();
-            loadPresetLibrary();
+        // ============================================================================
+        // 14. Chat Widget Toggle
+        // ============================================================================
+        const chatToggleBtn = document.getElementById('chatToggleBtn');
+        const chatWidget = document.getElementById('chatWidget');
+        const chatCollapseBtn = document.getElementById('chatCollapseBtn');
+
+        chatToggleBtn.addEventListener('click', () => {
+            chatWidget.classList.toggle('hidden');
+            const icon = document.getElementById('chatIcon');
+            if (!chatWidget.classList.contains('hidden')) {
+                icon.setAttribute('data-lucide', 'minus');
+            } else {
+                icon.setAttribute('data-lucide', 'message-square');
+            }
+            lucide.createIcons();
+        });
+
+        chatCollapseBtn.addEventListener('click', () => {
+            chatWidget.classList.add('hidden');
+            document.getElementById('chatIcon').setAttribute('data-lucide', 'message-square');
+            lucide.createIcons();
+        });
+
+        // --- Chat Suggestion Chips ---
+        document.querySelectorAll('.suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('chatInput').value = chip.textContent.trim();
+            });
+        });
+
+        // --- New Chat Button ---
+        document.getElementById('newChatBtn').addEventListener('click', () => {
+            const messages = document.getElementById('chatMessages');
+            messages.innerHTML = messages.querySelector('.flex.items-start')?.outerHTML || '';
+        });
+
+        // ============================================================================
+        // 15. Initialize: show welcome state
+        // ============================================================================
+        renderDocumentList();
+        updatePdfBadge();
+        toggleClearButton();
+
+        if (library.length > 0) {
+            activeDocId = library[0].id;
+            renderDocument(library[0]);
+        }
+        
+        // Final event listener closure for chat scope to fix the error:
+        document.getElementById('chatScope').onchange = () => {
+            console.log("Chat scope changed");
         };
+
     </script>
 </body>
 </html>
